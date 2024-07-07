@@ -1,0 +1,39 @@
+<!-- navbar.html -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="row w-100">
+                <div class="col-md-1">
+                <a class="navbar-brand btn btn-outline-secondary" href="{% url 'home-page' %}">Home</a></div>
+                <div class="col-md-6">
+                    <form class="d-flex mb-3" method="GET" action="">
+                        <input class="form-control me-2" type="search" name="q" id="search-input" placeholder="Search" aria-label="Search" value="{{ request.GET.q }}">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                        <button type="button" class="btn btn-outline-danger ms-2" onclick="clearSearch()">Clear</button>
+                    </form>
+                </div>
+                <div class="col-md-2">
+                    <a class="btn btn-outline-danger" href="{% url 'logout' %}">Logout</a>
+                </div>
+                <div class="col-md-2 mt-2 mb-2">
+                    Welcome, {{ user.username }}
+                </div>
+                <div class="col-md-1">
+                    <a class="btn btn-outline-secondary" href="{% url 'profile' %}">My Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    function clearSearch() {
+        // Redirect to home page without the 'q' parameter
+        window.location.href = window.location.origin + window.location.pathname;
+    }
+</script>

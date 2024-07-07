@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .profile-container {
+            margin-top: 5rem;
+        }
+        .card-profile {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .card-profile .card-body {
+            padding: 2rem;
+        }
+        .card-profile img {
+            width: 150px;
+            height: 150px;
+        }
+        .card-profile .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .card-profile .card-text {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-group input {
+            margin-bottom: 1rem;
+        }
+        .btn-success {
+            margin-top: 1rem;
+            width: 100%;
+        }
+        .task-info {
+            margin-top: 2rem;
+        }
+        .chart-container {
+            position: relative;
+            width: 80%;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    {% include 'todoapp/navbar.html' %}
+
+    <div class="container profile-container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card card-profile">
+                    <div class="card-body text-center">
+                        <img src="https://via.placeholder.com/150" alt="User Image" class="img-fluid rounded-circle mb-3">
+                        <h5 class="card-title">{{ user.username }}</h5>
+                        <p class="card-text">{{ user.email }}</p>
+                        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+                        <a class="btn btn-outline-danger" href="{% url 'logout' %}">Logout</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card card-profile">
+                    <div class="card-body">
+                        <h5 class="card-title">Profile Information</h5>
+                        <form method="POST" action="{% url 'update_profile' %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email address</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="first_name">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="last_name">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
+                            </div>
+                            <button type="submit" class="btn btn-success">Update Profile</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="task-info">
+                    <h5>Task Information</h5>
+                    <p>Total Tasks: {{ total_tasks }}</p>
+                    <p>Completed Tasks: {{ completed_tasks }}</p>
+                    <p>Pending Tasks: {{ pending_tasks }}</p>
+                    <div class="chart-container">
+                        <canvas id="disciplineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var ctx = document.getElementById('disciplineChart').getContext('2d');
+        var totalTasks = {{ total_tasks }};
+        var completedTasks = {{ completed_tasks }};
+        var completedPercentage = (totalTasks > 0) ? (completedTasks / totalTasks * 100) : 0;
+
+        var disciplineChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Task Completion'],
+                datasets: [{
+                    label: 'Completed',
+                    data: [completedPercentage],
+                    backgroundColor: '#28a745',
+                    barPercentage: 1.0,
+                    categoryPercentage: 0.6,
+                }, {
+                    label: 'Pending',
+                    data: [100 - completedPercentage],
+                    backgroundColor: '#dc3545',
+                    barPercentage: 1.0,
+                    categoryPercentage: 0.6,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+
+        function clearSearch() {
+            // Redirect to home page without the 'q' parameter
+            window.location.href = window.location.origin + window.location.pathname;
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>
